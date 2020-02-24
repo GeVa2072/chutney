@@ -9,9 +9,13 @@ cache:
   
 jdk: openjdk8
 
+before_script:
+  - export BINDIR=$(pwd) && curl -H 'Cache-Control:no-cache' https://raw.githubusercontent.com/fossas/fossa-cli/master/install.sh | bash
+
 install: skip
 
-script: "mvn -B -V -P node_install verify"
+script: "mvn -B -V -P node_install install -DskipTests"
 
 after_success:
   - bash <(curl -s https://codecov.io/bash)
+  - ([[ -n "$FOSSA_API_KEY" ]]) && (./fossa analyze)
